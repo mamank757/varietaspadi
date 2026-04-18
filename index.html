@@ -1,97 +1,234 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Padi AI - PPL Bola (Dark Mode)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { background-color: #0f172a; } /* Slate 900 */
-    </style>
-</head>
-<body class="min-h-screen p-4 md:p-8 text-gray-100">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katalog Varietas Padi - PPL Bola</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<div class="max-w-2xl mx-auto">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-extrabold text-green-400 flex justify-center items-center gap-2">
-            <span>🌾</span> Katalog Padi Digital
+<style>
+body {
+    background: radial-gradient(circle at top, #1e293b, #020617);
+}
+.fade-up {
+    animation: fadeUp 0.5s ease forwards;
+}
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4 text-gray-100">
+
+<div class="w-full max-w-xl">
+
+    <!-- HEADER -->
+    <div class="text-center mb-8 fade-up">
+        <h1 class="text-4xl font-extrabold bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent">
+            🌾 Katalog Varietas Padi
         </h1>
-        <p class="text-gray-400 font-medium">Asisten AI Penyuluh Pertanian</p>
+        <p class="text-gray-400 mt-2">Asisten Digital Pertanian</p>
     </div>
 
-    <div class="bg-slate-800 p-6 rounded-2xl shadow-2xl border-b-4 border-green-500 mb-6">
-        <label class="block text-sm font-bold text-green-400 mb-2 uppercase tracking-wide">Cari Varietas Padi:</label>
-        <div class="flex gap-2">
+    <!-- SEARCH BOX -->
+    <div class="bg-white/5 backdrop-blur-lg p-6 rounded-2xl border border-white/10 shadow-xl fade-up">
+        <label class="text-xs text-green-400 font-bold uppercase tracking-widest">
+            Cari Varietas
+        </label>
+
+        <div class="flex gap-2 mt-2">
             <input id="input-varietas" type="text"
-                placeholder="Contoh: Inpari 32, Ciherang..."
-                class="flex-1 p-3 bg-slate-700 border-2 border-slate-600 rounded-xl text-white focus:border-green-400 focus:ring-0 outline-none transition-all placeholder:text-gray-500">
-            
+                placeholder="Contoh: Inpari 32..."
+                class="flex-1 p-3 bg-slate-800 border border-slate-600 rounded-xl focus:border-green-400 outline-none transition">
+
             <button onclick="cariVarietas()" id="btn-cari"
-                class="bg-green-500 text-slate-900 px-5 py-3 rounded-xl font-bold hover:bg-green-400 active:scale-95 transition-all shadow-lg shadow-green-500/20">
-                <i class="fas fa-microchip"></i>
+                class="bg-gradient-to-r from-green-500 to-emerald-600 px-5 rounded-xl font-bold hover:scale-105 active:scale-95 transition shadow-lg">
+                <i class="fas fa-search"></i>
             </button>
         </div>
-        <p class="text-[10px] text-gray-500 mt-3 italic">*Data diolah secara otomatis oleh AI</p>
+
+        <p class="text-[10px] text-gray-500 mt-2 italic">*Didukung dan Diolah oleh AI</p>
     </div>
 
+    <!-- LOADING -->
     <div id="loading" class="hidden text-center py-10">
         <div class="animate-spin h-10 w-10 border-4 border-green-400 border-t-transparent rounded-full mx-auto"></div>
-        <p class="mt-3 text-green-400 font-semibold animate-pulse">Menganalisis data varietas...</p>
+        <p class="mt-3 text-green-400 animate-pulse">Menganalisis varietas...</p>
     </div>
 
-    <div id="hasil" class="hidden animate-in fade-in zoom-in duration-300">
-        <div class="bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
-            
-            <div class="bg-gradient-to-r from-green-600 to-emerald-700 text-white p-5">
-                <h2 id="nama" class="text-2xl font-black tracking-tight">-</h2>
-                <p class="text-green-100 text-[10px] uppercase font-bold mt-1 tracking-widest">Spesifikasi Teknis Varietas</p>
+    <!-- HASIL -->
+    <div id="hasil" class="hidden mt-6 fade-up">
+        <div class="bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+
+            <!-- HEADER -->
+            <div class="bg-gradient-to-r from-green-600 to-emerald-700 p-5">
+                <h2 id="nama" class="text-2xl font-black"></h2>
+                <p class="text-xs text-green-100 uppercase tracking-widest">Data Teknis</p>
+            </div>
+<div class="h-48 bg-slate-900/50 rounded-xl p-3">
+    <canvas id="chartHasil"></canvas>
+</div>
+
+<div class="p-5">
+    <div class="bg-blue-900/30 border border-blue-500/30 p-4 rounded-xl">
+        <p class="text-blue-400 font-bold mb-2">🌍 Varietas yang Direkomendasikan Sesuai Lokasi Anda  :</p>
+        <p id="lokasi" class="text-gray-300 text-sm">Mendeteksi lokasi...</p>
+        <p id="rekomendasi-lokal" class="text-gray-400 text-sm mt-2"></p>
+    </div>
+</div>
+            <!-- DATA GRID -->
+            <div class="p-5 grid grid-cols-2 gap-4 text-sm">
+
+                <div class="bg-slate-800 p-3 rounded-xl">
+                    🌱 <b>Umur</b>
+                    <p id="umur"></p>
+                </div>
+
+                <div class="bg-slate-800 p-3 rounded-xl">
+                    📈 <b>Hasil</b>
+                    <p id="potensi"></p>
+                </div>
+
+                <div class="bg-slate-800 p-3 rounded-xl">
+                    🛡️ <b>Hama</b>
+                    <p id="hama"></p>
+                </div>
+
+                <div class="bg-slate-800 p-3 rounded-xl">
+                    🍚 <b>Nasi</b>
+                    <p id="nasi"></p>
+                </div>
+
             </div>
 
-            <div class="p-6 grid grid-cols-2 gap-6">
-                <div class="space-y-1">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">🌱 Umur Tanaman</p>
-                    <p id="umur" class="text-gray-200 font-semibold">-</p>
-                </div>
-                <div class="space-y-1">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">📈 Potensi Hasil</p>
-                    <p id="potensi" class="text-gray-200 font-semibold">-</p>
-                </div>
-                <div class="space-y-1">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">🛡️ Ketahanan Hama</p>
-                    <p id="hama" class="text-gray-200 font-semibold">-</p>
-                </div>
-                <div class="space-y-1">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">🍚 Tekstur Nasi</p>
-                    <p id="nasi" class="text-gray-200 font-semibold">-</p>
-                </div>
-            </div>
-
-            <div class="px-6 pb-6">
-                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
-                    <p class="text-green-400 font-bold text-sm mb-2 flex items-center gap-2">
-                        <i class="fas fa-lightbulb text-yellow-400"></i> Rekomendasi PPL:
+            <!-- SARAN -->
+            <div class="p-5">
+                <div class="bg-green-900/30 border border-green-500/30 p-4 rounded-xl">
+                    <p class="text-green-400 font-bold mb-2">
+                        💡 Rekomendasi:
                     </p>
-                    <p id="saran" class="text-gray-400 text-sm italic leading-relaxed">-</p>
+                    <p id="saran" class="text-gray-300 text-sm"></p>
                 </div>
             </div>
+
         </div>
     </div>
+
 </div>
 
 <script>
 const gasUrl = "https://script.google.com/macros/s/AKfycbytunLdamazV9nrpgozS5bDMf7tJQca6tNUXil9i5-h_uMThGvI5yunvtWi2Ll2AuNCoA/exec";
 
-document.getElementById("input-varietas").addEventListener("keypress", (e) => {
+const inputField = document.getElementById("input-varietas");
+inputField.focus();
+
+// Placeholder dinamis
+const contoh = ["Inpari 32", "Ciherang", "Mekongga", "IR64", "Inpari 42", "Cigeulis"];
+let i = 0;
+setInterval(() => {
+    inputField.placeholder = "Contoh: " + contoh[i];
+    i = (i + 1) % contoh.length;
+}, 800);
+
+inputField.addEventListener("keypress", (e) => {
     if (e.key === "Enter") cariVarietas();
 });
+let chart;
 
-async function cariVarietas() {
-    const input = document.getElementById("input-varietas").value.trim();
-    if (!input) {
-        alert("Silakan masukkan nama varietas!");
+// =======================
+// 📊 GRAFIK HASIL PANEN
+// =======================
+function renderChart(potensiText) {
+    let angka = 0;
+
+    // ambil angka dari teks (misal: 6-8 → ambil rata-rata)
+    const match = potensiText.match(/(\d+(\.\d+)?)/g);
+
+    if (match) {
+        if (match.length > 1) {
+            angka = (parseFloat(match[0]) + parseFloat(match[1])) / 2;
+        } else {
+            angka = parseFloat(match[0]);
+        }
+    }
+
+    const ctx = document.getElementById('chartHasil');
+
+    if (chart) chart.destroy();
+
+   chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Produktivitas (ton/ha)'],
+        datasets: [{
+            label: 'Hasil',
+            data: [angka],
+            backgroundColor: '#22c55e',
+            borderRadius: 10
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: { color: '#e5e7eb' }
+            }
+        },
+        scales: {
+            y: { 
+                beginAtZero: true,
+                ticks: { color: '#e5e7eb' }
+            },
+            x: {
+                ticks: { color: '#e5e7eb' }
+            }
+        }
+    }
+});
+}
+
+function deteksiLokasi() {
+    const lokasiText = document.getElementById("lokasi");
+    const rekomText = document.getElementById("rekomendasi-lokal");
+
+    if (!navigator.geolocation) {
+        lokasiText.innerText = "Geolocation tidak didukung";
         return;
     }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        lokasiText.innerText = `Koordinat: ${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+
+        // Mapping sederhana wilayah Indonesia
+        let rekom = "Belum ada rekomendasi spesifik";
+
+        if (lat < 0 && lon > 119) {
+            rekom = "🌾 Cocok: Inpari 32, Mekongga (Sulawesi)";
+        } 
+        else if (lat < 0 && lon > 106 && lon < 112) {
+            rekom = "🌾 Cocok: Ciherang, IR64 (Jawa)";
+        }
+        else if (lat > -5 && lon < 105) {
+            rekom = "🌾 Cocok: Inpari 42 (Sumatera)";
+        }
+
+        rekomText.innerText = rekom;
+
+    }, () => {
+        lokasiText.innerText = "Izin lokasi ditolak";
+    });
+}
+async function cariVarietas() {
+    const input = inputField.value.trim();
+    if (!input) return alert("Masukkan varietas dulu!");
 
     const btn = document.getElementById("btn-cari");
     const loading = document.getElementById("loading");
@@ -101,32 +238,36 @@ async function cariVarietas() {
     loading.classList.remove("hidden");
     hasil.classList.add("hidden");
 
-    const promptText = `Anda adalah ahli agronomi padi. Berikan data teknis varietas: ${input}. 
-    Balas HANYA dengan JSON valid tanpa teks tambahan. 
-    Struktur: {"nama":"...", "umur":"...", "potensi":"...", "hama":"...", "nasi":"...", "saran":"..."}`;
+    const promptText = `Anda ahli padi. Berikan data varietas ${input}.
+    Format JSON: {"nama":"","umur":"","potensi":"","hama":"","nasi":"","saran":""}`;
 
     try {
-        const response = await fetch(gasUrl, {
+        const res = await fetch(gasUrl, {
             method: "POST",
             body: JSON.stringify({ prompt: promptText }),
         });
 
-        const data = await response.json();
+        const data = await res.json();
 
-        if (data.error) {
-            alert("Terjadi Kendala: " + data.message);
-        } else {
-            document.getElementById("nama").innerText = data.nama.toUpperCase();
-            document.getElementById("umur").innerText = data.umur || "-";
-            document.getElementById("potensi").innerText = data.potensi || "-";
-            document.getElementById("hama").innerText = data.hama || "-";
-            document.getElementById("nasi").innerText = data.nasi || "-";
-            document.getElementById("saran").innerText = data.saran || "-";
-            hasil.classList.remove("hidden");
-        }
-    } catch (err) {
-        console.error("Fetch Error:", err);
-        alert("Gagal mengambil data. Pastikan Apps Script sudah di-deploy dengan benar.");
+        document.getElementById("nama").innerText = data.nama || "-";
+        document.getElementById("umur").innerText = data.umur || "-";
+        document.getElementById("potensi").innerText = data.potensi || "-";
+        document.getElementById("hama").innerText = data.hama || "-";
+        document.getElementById("nasi").innerText = data.nasi || "-";
+     document.getElementById("saran").innerText = data.saran || "-";
+
+document.getElementById("saran").innerText = data.saran || "-";
+
+// ✅ panggil fitur
+renderChart(data.potensi);
+deteksiLokasi();
+
+// tampilkan hasil
+hasil.classList.remove("hidden");
+
+      
+    } catch (e) {
+        alert("Gagal ambil data");
     } finally {
         btn.disabled = false;
         loading.classList.add("hidden");

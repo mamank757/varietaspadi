@@ -102,6 +102,21 @@ body {
                     🍚 <b>Nasi</b>
                     <p id="nasi"></p>
                 </div>
+                
+                <div class="bg-slate-800 p-3 rounded-xl">
+    🌍 <b>Adaptasi</b>
+    <p id="adaptasi"></p>
+</div>
+
+<div class="bg-slate-800 p-3 rounded-xl">
+    👍 <b>Kelebihan</b>
+    <p id="kelebihan"></p>
+</div>
+
+<div class="bg-slate-800 p-3 rounded-xl">
+    ⚠️ <b>Kekurangan</b>
+    <p id="kekurangan"></p>
+</div>
 
             </div>
 
@@ -238,8 +253,36 @@ async function cariVarietas() {
     loading.classList.remove("hidden");
     hasil.classList.add("hidden");
 
-    const promptText = `Anda ahli padi. Berikan data varietas ${input}.
-    Format JSON: {"nama":"","umur":"","potensi":"","hama":"","nasi":"","saran":""}`;
+   const promptText = `
+Anda adalah ahli agronomi padi di Indonesia.
+
+Berikan informasi varietas padi berikut: ${input}
+
+Berikan informasi secara LENGKAP, SPESIFIK, dan PRAKTIS berdasarkan data lapangan.
+
+WAJIB:
+- Gunakan bahasa Indonesia
+- Jawaban harus realistis (seperti penyuluh lapangan)
+- Hindari jawaban umum
+- Fokus ke petani
+
+Balas HANYA dengan JSON valid tanpa teks tambahan.
+
+Format JSON:
+
+{
+"nama": "",
+"umur": "contoh: 110-120 hari setelah tanam",
+"potensi": "contoh: 6-8 ton/ha",
+"hama": "jelaskan tahan terhadap hama apa saja + tingkat ketahanan",
+"nasi": "tekstur nasi + kualitas rasa",
+"adaptasi": "cocok di lahan apa (irigasi, tadah hujan, dataran tinggi/rendah)",
+"kelebihan": "poin keunggulan utama varietas",
+"kekurangan": "poin kelemahan varietas",
+"pemupukan": "rekomendasi dasar pemupukan singkat",
+"saran": "rekomendasi praktis untuk petani"
+}
+`;
 
     try {
         const res = await fetch(gasUrl, {
@@ -255,8 +298,9 @@ async function cariVarietas() {
         document.getElementById("hama").innerText = data.hama || "-";
         document.getElementById("nasi").innerText = data.nasi || "-";
      document.getElementById("saran").innerText = data.saran || "-";
-
-document.getElementById("saran").innerText = data.saran || "-";
+document.getElementById("adaptasi").innerText = data.adaptasi || "-";
+document.getElementById("kelebihan").innerText = data.kelebihan || "-";
+document.getElementById("kekurangan").innerText = data.kekurangan || "-";
 
 // ✅ panggil fitur
 renderChart(data.potensi);
